@@ -1,5 +1,7 @@
 package zen.test.tictactoe;
 
+import zen.test.tictactoe.ex.ForbiddenActionException;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -35,8 +37,13 @@ public class Game {
 
     public void activePlayerStepAt(int slotNum) {
         GamePad.SYMBOL s = isRoundForPlayer1() ? O : X;
-        gamePad.setSlot(slotNum, s);
-        round++;
+        if(gamePad.isSlotEmpty(slotNum)) {
+            gamePad.setSlot(slotNum, s);
+            round++;
+        }
+        else {
+            throw new ForbiddenActionException(slotNum+" is placed by "+ gamePad.getSlot(slotNum));
+        }
     }
 
     private boolean isRoundForPlayer1() {
@@ -53,7 +60,9 @@ public class Game {
                                            new int[] {7, 8, 9},
                                            new int[] {1, 4, 7},
                                            new int[] {2, 5, 8},
-                                           new int[] {3, 6, 9});
+                                           new int[] {3, 6, 9},
+                                           new int[] {1, 5, 9},
+                                           new int[] {3, 5, 7});
 
         List<Integer> oSlot = new ArrayList<>();
         List<Integer> xSlot = new ArrayList<>();
@@ -100,7 +109,8 @@ public class Game {
 
         while (!game.isEnd()) {
             Player player = game.getActivePlayer();
-            System.out.println(player.getName() + ", what's your next step? please input like: \n| 1 2 3 |\n| 4 5 6 |\n| 7 8 9 |");
+            System.out.println(
+                    player.getName() + ", what's your next step? please input like: \n| 1 2 3 |\n| 4 5 6 |\n| 7 8 9 |");
             int slotNum = sc.nextInt();
             game.activePlayerStepAt(slotNum);
         }

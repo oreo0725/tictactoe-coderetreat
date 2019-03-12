@@ -1,6 +1,8 @@
 package zen.test.tictactoe;
 
+import org.assertj.core.api.Assertions;
 import org.junit.Test;
+import zen.test.tictactoe.ex.ForbiddenActionException;
 
 import java.util.Arrays;
 
@@ -114,6 +116,40 @@ public class GamePadTest {
         assertThat(gamePad.getPadSlots()).containsExactly(new SYMBOL[] {O, X, null},
                                                           new SYMBOL[] {O, X, null},
                                                           new SYMBOL[] {O, null, null});
+    }
+
+    @Test
+    public void test_getPadSlots_GIVEN_o1x2o5x4o9_THEN_p1_win() throws Exception {
+        // GIVEN
+        // WHEN
+        playTakeTurns(1, 2, 5, 4, 9);
+        // THEN
+        assertThat(game.isEnd()).isTrue();
+        assertThat(game.getWinner()).isEqualTo(p1);
+        assertThat(gamePad.getPadSlots()).containsExactly(new SYMBOL[] {O, X, null},
+                                                          new SYMBOL[] {X, O, null},
+                                                          new SYMBOL[] {null, null, O});
+    }
+
+    @Test
+    public void test_getPadSlots_GIVEN_o1x1_THEN_throw_ForbiddenActionException() throws Exception {
+        // GIVEN
+        // WHEN
+        try {
+            playTakeTurns(1, 1);
+
+            Assertions.fail("Cannot be here");
+        } catch (ForbiddenActionException e) {
+
+            System.out.println(e);
+            assertThat(game.isEnd()).isFalse();
+            assertThat(game.getWinner()).isNull();
+            assertThat(game.getActivePlayer()).isEqualTo(p2);
+            assertThat(gamePad.getPadSlots()).containsExactly(new SYMBOL[] {O, null, null},
+                                                              new SYMBOL[] {null, null, null},
+                                                              new SYMBOL[] {null, null, null});
+        }
+
     }
 
     private void playTakeTurns(int... slots) {

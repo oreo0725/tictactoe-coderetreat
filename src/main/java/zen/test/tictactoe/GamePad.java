@@ -18,6 +18,18 @@ public class GamePad {
         System.out.println(toString());
     }
 
+    public boolean isSlotEmpty(int slotNum) {
+
+        return getSlot(slotNum) == null;
+    }
+
+    public SYMBOL getSlot(int slotNum) {
+        int row = (slotNum - 1) / 3;
+        int col = (slotNum - 1) % 3;
+
+        return symbols[row][col];
+    }
+
     enum SYMBOL {
         O,  //first player use
         X

@@ -1,6 +1,7 @@
 package zen.test.tictactoe;
 
 import zen.test.tictactoe.ex.ForbiddenActionException;
+import zen.test.tictactoe.ex.GameOverException;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -20,6 +21,7 @@ public class Game {
     private final Player player1;
     private final Player player2;
     private int round = 0;
+    private boolean isGameOver = false;
 
     public Game(GamePad gamePad,
                 Player player1,
@@ -36,13 +38,21 @@ public class Game {
     }
 
     public void activePlayerStepAt(int slotNum) {
+        if (isGameOver) {
+            throw new GameOverException();
+        }
+
         GamePad.SYMBOL s = isRoundForPlayer1() ? O : X;
-        if(gamePad.isSlotEmpty(slotNum)) {
+        if (gamePad.isSlotEmpty(slotNum)) {
             gamePad.setSlot(slotNum, s);
             round++;
         }
         else {
-            throw new ForbiddenActionException(slotNum+" is placed by "+ gamePad.getSlot(slotNum));
+            throw new ForbiddenActionException(slotNum + " is placed by " + gamePad.getSlot(slotNum));
+        }
+
+        if (isHasWinnerOrNoEmptySlot()) {
+            isGameOver = true;
         }
     }
 
@@ -50,8 +60,12 @@ public class Game {
         return round % 2 == 0;
     }
 
-    public boolean isEnd() {
+    private boolean isHasWinnerOrNoEmptySlot() {
         return round >= 9 || getWinner() != null;
+    }
+
+    public boolean isGameOver() {
+        return isGameOver;
     }
 
     public Player getWinner() {
@@ -107,7 +121,7 @@ public class Game {
 
         Game game = new Game(new GamePad(), p1, p2);
 
-        while (!game.isEnd()) {
+        while (!game.isGameOver()) {
             Player player = game.getActivePlayer();
             System.out.println(
                     player.getName() + ", what's your next step? please input like: \n| 1 2 3 |\n| 4 5 6 |\n| 7 8 9 |");

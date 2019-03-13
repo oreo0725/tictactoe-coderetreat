@@ -3,6 +3,7 @@ package zen.test.tictactoe;
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import zen.test.tictactoe.ex.ForbiddenActionException;
+import zen.test.tictactoe.ex.GameOverException;
 
 import java.util.Arrays;
 
@@ -72,7 +73,7 @@ public class GamePadTest {
         // WHEN
         Player currentPlayer = game.getActivePlayer();
         // THEN
-        assertThat(game.isEnd()).isFalse();
+        assertThat(game.isGameOver()).isFalse();
         assertThat(currentPlayer).isEqualTo(p2);
         assertThat(gamePad.getPadSlots()).containsExactly(new SYMBOL[] {X, O, null},
                                                           new SYMBOL[] {null, O, null},
@@ -85,7 +86,7 @@ public class GamePadTest {
         // WHEN
         playTakeTurns(5, 1, 4, 2, 6);
         // THEN
-        assertThat(game.isEnd()).isTrue();
+        assertThat(game.isGameOver()).isTrue();
         assertThat(game.getWinner()).isEqualTo(p1);
         assertThat(gamePad.getPadSlots()).containsExactly(new SYMBOL[] {X, X, null},
                                                           new SYMBOL[] {O, O, O},
@@ -98,7 +99,7 @@ public class GamePadTest {
         // WHEN
         playTakeTurns(5, 1, 4, 2, 7, 3);
         // THEN
-        assertThat(game.isEnd()).isTrue();
+        assertThat(game.isGameOver()).isTrue();
         assertThat(game.getWinner()).isEqualTo(p2);
         assertThat(gamePad.getPadSlots()).containsExactly(new SYMBOL[] {X, X, X},
                                                           new SYMBOL[] {O, O, null},
@@ -111,7 +112,7 @@ public class GamePadTest {
         // WHEN
         playTakeTurns(1, 2, 4, 5, 7);
         // THEN
-        assertThat(game.isEnd()).isTrue();
+        assertThat(game.isGameOver()).isTrue();
         assertThat(game.getWinner()).isEqualTo(p1);
         assertThat(gamePad.getPadSlots()).containsExactly(new SYMBOL[] {O, X, null},
                                                           new SYMBOL[] {O, X, null},
@@ -124,7 +125,7 @@ public class GamePadTest {
         // WHEN
         playTakeTurns(1, 2, 5, 4, 9);
         // THEN
-        assertThat(game.isEnd()).isTrue();
+        assertThat(game.isGameOver()).isTrue();
         assertThat(game.getWinner()).isEqualTo(p1);
         assertThat(gamePad.getPadSlots()).containsExactly(new SYMBOL[] {O, X, null},
                                                           new SYMBOL[] {X, O, null},
@@ -142,11 +143,51 @@ public class GamePadTest {
         } catch (ForbiddenActionException e) {
 
             System.out.println(e);
-            assertThat(game.isEnd()).isFalse();
+            assertThat(game.isGameOver()).isFalse();
             assertThat(game.getWinner()).isNull();
             assertThat(game.getActivePlayer()).isEqualTo(p2);
             assertThat(gamePad.getPadSlots()).containsExactly(new SYMBOL[] {O, null, null},
                                                               new SYMBOL[] {null, null, null},
+                                                              new SYMBOL[] {null, null, null});
+        }
+
+    }
+
+    @Test
+    public void test_getPadSlots_GIVEN_o5x1o3x7o4x6o8x2o9x1_THEN_throw_GameOverException() throws Exception {
+        // GIVEN
+        // WHEN
+        try {
+            playTakeTurns(5, 1, 3, 7, 4, 6, 8, 2, 9, 1);
+
+            Assertions.fail("Cannot be here");
+        } catch (GameOverException e) {
+
+            System.out.println(e);
+            assertThat(game.isGameOver()).isTrue();
+            assertThat(game.getWinner()).isNull();
+            assertThat(gamePad.getPadSlots()).containsExactly(new SYMBOL[] {X, X, O},
+                                                              new SYMBOL[] {O, O, X},
+                                                              new SYMBOL[] {X, O, O});
+        }
+
+    }
+
+    @Test
+    public void test_getPadSlots_GIVEN_o5x1o4x2o6x3_THEN_throw_GameOverException() throws Exception {
+        // GIVEN
+        // WHEN
+        try {
+            playTakeTurns(5, 1, 4, 2, 6, 3);
+
+            Assertions.fail("Cannot be here");
+        } catch (GameOverException e) {
+
+            System.out.println(e);
+            assertThat(game.isGameOver()).isTrue();
+            assertThat(game.getWinner()).isEqualTo(p1);
+            assertThat(gamePad.getPadSlots()).containsExactly(new SYMBOL[] {X, X, null},
+                                                              new SYMBOL[] {O, O, O},
                                                               new SYMBOL[] {null, null, null});
         }
 
